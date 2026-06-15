@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MILWAUKEE Coupon | มหาจักรทูลส์</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f2f2f2;min-height:100vh;color:#1a1a1a}
+
+/* ── HEADER ── */
+.header{background:#CC0000;color:#fff;padding:14px 16px;text-align:center;position:sticky;top:0;z-index:200;box-shadow:0 3px 10px rgba(0,0,0,.35)}
+.header h1{font-size:18px;font-weight:900;letter-spacing:1.5px;line-height:1.2}
+.header p{font-size:11px;opacity:.8;margin-top:3px;letter-spacing:.5px}
+
+/* ── TABS ── */
+.tabs{display:flex;background:#111;position:sticky;top:58px;z-index:199;border-bottom:1px solid #222}
+.tab{flex:1;padding:10px 4px 8px;text-align:center;color:#777;cursor:pointer;font-size:11px;font-weight:700;border-bottom:3px solid transparent;transition:all .2s;user-select:none}
+.tab span.icon{font-size:18px;display:block;margin-bottom:2px}
+.tab.active{color:#CC0000;border-bottom-color:#CC0000;background:#1a1a1a}
+
+/* ── LAYOUT ── */
+.content{padding:16px;max-width:480px;margin:0 auto}
+.section{display:none}
+.section.active{display:block}
+
+/* ── CARD ── */
+.card{background:#fff;border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.07)}
+.card-title{font-size:15px;font-weight:800;color:#111;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+/* ── FORM ── */
+.form-group{margin-bottom:14px}
+label{display:block;font-size:12px;font-weight:700;color:#555;margin-bottom:6px;letter-spacing:.3px;text-transform:uppercase}
+input[type=text],input[type=number],input[type=tel],input[type=password]{
+  width:100%;padding:13px 14px;border:2px solid #e8e8e8;border-radius:10px;
+  font-size:15px;transition:border-color .2s;outline:none;background:#fafafa}
+input:focus{border-color:#CC0000;background:#fff}
+input[type=password]{letter-spacing:6px;text-align:center;font-size:22px}
+
+/* ── BUTTONS ── */
+.btn{width:100%;padding:14px;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;transition:all .15s;letter-spacing:.5px;margin-top:4px}
+.btn:active{transform:scale(.97)}
+.btn-red{background:#CC0000;color:#fff}
+.btn-red:hover{background:#aa0000}
+.btn-red:disabled{background:#ccc;color:#999;cursor:not-allowed;transform:none}
+.btn-green{background:#16a34a;color:#fff}
+.btn-green:hover{background:#15803d}
+.btn-outline{background:transparent;color:#CC0000;border:2px solid #CC0000}
+.btn-gray{background:#6b7280;color:#fff}
+.btn-sm{padding:10px 14px;font-size:13px;margin-top:0}
+
+/* ── COUPON CARD ── */
+.coupon-wrap{background:linear-gradient(135deg,#111 0%,#2a2a2a 100%);border-radius:16px;overflow:hidden;margin:12px 0;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.coupon-top{padding:20px 22px 14px;position:relative;overflow:hidden}
+.coupon-top::after{content:'';position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:rgba(204,0,0,.18);border-radius:50%;pointer-events:none}
+.coupon-brand{font-size:10px;letter-spacing:3px;color:#CC0000;font-weight:900;text-transform:uppercase}
+.coupon-value{font-size:52px;font-weight:900;color:#fff;line-height:1;margin:6px 0 4px}
+.coupon-value sup{font-size:20px;font-weight:400;vertical-align:super;margin-right:2px}
+.coupon-sub{font-size:12px;color:#aaa;margin-bottom:4px}
+.coupon-divider{border:none;border-top:2px dashed rgba(255,255,255,.15);margin:12px 22px}
+.coupon-bottom{padding:0 22px 18px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ci label{font-size:10px;color:#666;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:2px}
+.ci span{color:#ddd;font-weight:700;font-size:13px}
+.coupon-code-box{margin:10px 22px 0;background:rgba(255,255,255,.05);border:1px solid rgba(204,0,0,.4);border-radius:8px;padding:10px;text-align:center;font-family:monospace;font-size:18px;font-weight:800;letter-spacing:3px;color:#CC0000}
+
+/* ── QR ── */
+.qr-box{display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;border-radius:14px;padding:18px;margin:10px 0;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.qr-box p{font-size:12px;color:#888;margin-top:10px;text-align:center}
+
+/* ── STATUS BADGES ── */
+.badge{display:inline-block;padding:4px 11px;border-radius:20px;font-size:12px;font-weight:800;letter-spacing:.3px}
+.b-active{background:#dcfce7;color:#15803d}
+.b-used{background:#fee2e2;color:#dc2626}
+.b-expired{background:#f3f4f6;color:#6b7280}
+
+/* ── ALERTS ── */
+.alert{padding:12px 14px;border-radius:10px;font-size:13px;margin-bottom:12px;line-height:1.5}
+.a-success{background:#f0fdf4;color:#166534;border-left:4px solid #22c55e}
+.a-error{background:#fff1f2;color:#9f1239;border-left:4px solid #f43f5e}
+.a-warn{background:#fffbeb;color:#92400e;border-left:4px solid #f59e0b}
+.a-info{background:#eff6ff;color:#1e3a8a;border-left:4px solid #3b82f6}
+
+/* ── PROGRESS ── */
+.prog-wrap{margin:6px 0 10px}
+.prog-bar{height:7px;background:#f0f0f0;border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;background:#CC0000;border-radius:4px;transition:width .4s}
+.prog-label{display:flex;justify-content:space-between;font-size:11px;color:#888;margin-top:5px}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-card{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.stat-n{font-size:30px;font-weight:900;line-height:1}
+.stat-l{font-size:11px;color:#777;margin-top:4px;font-weight:600}
+
+/* ── LIST ── */
+.list-item{border-bottom:1px solid #f5f5f5;padding:12px 0;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.list-item:last-child{border-bottom:none}
+
+/* ── PIN SCREEN ── */
+.pin-screen{background:#fff;border:2px solid #f0f0f0;border-radius:14px;padding:28px 20px;text-align:center;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.07)}
+.pin-screen .lock-icon{font-size:44px;margin-bottom:12px}
+.pin-screen h3{font-size:18px;font-weight:800;margin-bottom:6px}
+.pin-screen p{font-size:13px;color:#888;margin-bottom:18px}
+.pin-err{color:#CC0000;font-size:12px;min-height:18px;margin-top:8px}
+
+/* ── 2-COL BUTTONS ── */
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+
+/* ── COUPON LIST ITEM ── */
+.cl-code{font-family:monospace;font-weight:800;font-size:13px;color:#111}
+.cl-meta{font-size:11px;color:#888;margin-top:2px}
+
+/* ── PRINT ── */
+@media print{
+  .tabs,.header,.btn,.btn-row,.pin-screen{display:none!important}
+  .coupon-wrap{box-shadow:none}
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:360px){
+  .tab{font-size:10px}.tab span.icon{font-size:16px}
+  .coupon-value{font-size:44px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🔧 MILWAUKEE × มหาจักรทูลส์</h1>
+  <p>Mid-Year Sale 2026 — ระบบคูปองส่วนลด</p>
+</div>
+
+<div class="tabs" id="tabs">
+  <div class="tab active" data-tab="issue" onclick="showTab(this)">
+    <span class="icon">🎟️</span>ออกคูปอง
+  </div>
+  <div class="tab" data-tab="view" onclick="showTab(this)">
+    <span class="icon">👁️</span>ดูคูปอง
+  </div>
+  <div class="tab" data-tab="verify" onclick="showTab(this)">
+    <span class="icon">✅</span>แลกคูปอง
+  </div>
+  <div class="tab" data-tab="admin" onclick="showTab(this)">
+    <span class="icon">📊</span>รายงาน
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════════
+     TAB 1 — ออกคูปอง (Staff Issues Coupon)
+═══════════════════════════════════════════ -->
+<div class="section active" id="tab-issue">
+
+  <!-- PIN Lock -->
+  <div id="issue-lock" class="pin-screen">
+    <div class="lock-icon">🔒</div>
+    <h3>สำหรับพนักงานเท่านั้น</h3>
+    <p>กรุณาใส่ PIN พนักงาน 4 หลัก<br>เพื่อออกคูปองให้ลูกค้า</p>
+    <div style="max-width:180px;margin:0 auto">
+      <input type="password" id="staff-pin" maxlength="4" placeholder="••••" oninput="checkStaffPin()">
+    </div>
+    <div class="pin-err" id="staff-pin-err"></div>
+    <p style="font-size:11px;color:#bbb;margin-top:16px">PIN เริ่มต้น: <strong>1234</strong> (เปลี่ยนได้ในโค้ด)</p>
+  </div>
+
+  <!-- Issue Form -->
+  <div id="issue-form" style="display:none">
+
+    <div class="alert a-info">
+      💡 <strong>เงื่อนไข:</strong> ซื้อสินค้า MILWAUKEE ครบ <strong>฿5,000</strong> ขึ้นไป
+      รับคูปองส่วนลด <strong>฿200</strong> ใช้ได้ <strong>14 วัน</strong>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🎟️ ออกคูปองใหม่</div>
+
+      <div class="form-group">
+        <label>เลขที่ใบเสร็จ *</label>
+        <input type="text" id="receipt-no" placeholder="เช่น REC-001 หรือ 20260612-001" oninput="calcEligibility()">
+      </div>
+      <div class="form-group">
+        <label>ชื่อลูกค้า (ไม่บังคับ)</label>
+        <input type="text" id="cust-name" placeholder="เช่น คุณสมชาย ใจดี">
+      </div>
+      <div class="form-group">
+        <label>เบอร์โทร (ไม่บังคับ)</label>
+        <input type="tel" id="cust-phone" placeholder="0812345678">
+      </div>
+      <div class="form-group">
+        <label>ยอดซื้อสินค้า MILWAUKEE (บาท) *</label>
+        <input type="number" id="purchase-amt" placeholder="เช่น 5500" min="0" step="1" oninput="calcEligibility()">
+      </div>
+
+      <!-- Progress -->
+      <div id="prog-section" style="display:none">
+        <div class="prog-wrap">
+          <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+          <div class="prog-label"><span id="prog-curr">฿0</span><span>เป้าหมาย ฿5,000</span></div>
+        </div>
+      </div>
+
+      <div id="elig-ok" style="display:none" class="alert a-success">✅ ยอดครบเงื่อนไข! ออกคูปอง ฿200 ได้เลย</div>
+      <div id="elig-no" style="display:none" class="alert a-warn"></div>
+
+      <button class="btn btn-red" id="gen-btn" onclick="issueCoupon()" disabled>🎟️ ออกคูปอง ฿200 ให้ลูกค้า</button>
+    </div>
+
+    <!-- Generated coupon result -->
+    <div id="coupon-result" style="display:none">
+      <div class="coupon-wrap" id="coupon-display">
+        <div class="coupon-top">
+          <div class="coupon-brand">MILWAUKEE × มหาจักรทูลส์ · Mid-Year Sale 2026</div>
+          <div class="coupon-value"><sup>฿</sup><span id="cv-val">200</span></div>
+          <div class="coupon-sub">ส่วนลดสินค้าทุกชนิดในร้านมหาจักรทูลส์</div>
+        </div>
+        <hr class="coupon-divider">
+        <div class="coupon-bottom">
+          <div class="ci"><label>ชื่อลูกค้า</label><span id="cv-name">-</span></div>
+          <div class="ci"><label>เลขใบเสร็จ</label><span id="cv-receipt">-</span></div>
+          <div class="ci"><label>วันออกคูปอง</label><span id="cv-issued">-</span></div>
+          <div class="ci"><label>หมดอายุ</label><span id="cv-expiry" style="color:#f87171">-</span></div>
+        </div>
+        <div class="coupon-code-box" id="cv-code">-</div>
+        <div style="padding:6px 22px 4px;font-size:10px;color:#555;text-align:center">
+          ✦ แสดง QR Code หรือรหัสนี้ให้แคชเชียร์ยืนยัน ✦
+        </div>
+      </div>
+
+      <div class="qr-box">
+        <div id="qr-out"></div>
+        <p>สแกน QR นี้ที่แคชเชียร์ตอนแลกคูปอง<br>หรือแจ้งรหัสด้านบน</p>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-outline btn-sm" onclick="window.print()">🖨️ พิมพ์คูปอง</button>
+        <button class="btn btn-red btn-sm" onclick="resetIssueForm()">➕ ออกคูปองใหม่</button>
+      </div>
+
+      <div class="alert a-info" style="margin-top:12px;font-size:12px">
+        📱 ให้ลูกค้า screenshot หน้านี้ หรือจดรหัสคูปอง
+        ไว้ก็ได้ — ใช้แสดงตอนมาแลกส่วนลด
+      </div>
+    </div>
+
+  </div>
+</div><!-- /tab-issue -->
+
+<!-- ═══════════════════════════════════════════
+     TAB 2 — ดูคูปอง (Customer Views Coupon)
+═══════════════════════════════════════════ -->
+<div class="section" id="tab-view">
+  <div class="card">
+    <div class="card-title">👁️ ดูรายละเอียดคูปอง</div>
+    <div class="form-group">
+      <label>รหัสคูปอง</label>
+      <input type="text" id="view-code" placeholder="เช่น MHJ-20260612-A3K9"
+        style="font-family:monospace;text-transform:uppercase;letter-spacing:1px"
+        oninput="this.value=this.value.toUpperCase()">
+    </div>
+    <button class="btn btn-red" onclick="findCoupon('view')">🔍 ค้นหาคูปอง</button>
+  </div>
+  <div id="view-result"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB 3 — แลกคูปอง (Cashier Redeems)
+═══════════════════════════════════════════ -->
+<div class="section" id="tab-verify">
+  <div class="alert a-info">
+    🏪 <strong>สำหรับแคชเชียร์:</strong> พิมพ์รหัสคูปองจากลูกค้า
+    แล้วกด "ตรวจสอบ" เพื่อดูสถานะและแลกส่วนลด
+  </div>
+  <div class="card">
+    <div class="card-title">✅ ตรวจสอบ &amp; แลกคูปอง</div>
+    <div class="form-group">
+      <label>รหัสคูปอง *</label>
+      <input type="text" id="verify-code" placeholder="MHJ-XXXXXXXX-XXXX"
+        style="font-family:monospace;font-size:19px;letter-spacing:2px;text-transform:uppercase"
+        oninput="this.value=this.value.toUpperCase()">
+    </div>
+    <button class="btn btn-red" onclick="findCoupon('verify')">🔍 ตรวจสอบคูปอง</button>
+  </div>
+  <div id="verify-result"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB 4 — รายงาน (Admin Report)
+═══════════════════════════════════════════ -->
+<div class="section" id="tab-admin">
+
+  <!-- Admin PIN -->
+  <div id="admin-lock" class="pin-screen">
+    <div class="lock-icon">🔐</div>
+    <h3>รายงานผู้จัดการ</h3>
+    <p>กรุณาใส่ PIN ผู้จัดการ</p>
+    <div style="max-width:180px;margin:0 auto">
+      <input type="password" id="admin-pin" maxlength="6" placeholder="••••" oninput="checkAdminPin()">
+    </div>
+    <div class="pin-err" id="admin-pin-err"></div>
+    <p style="font-size:11px;color:#bbb;margin-top:16px">PIN เริ่มต้น: <strong>9999</strong> (เปลี่ยนได้ในโค้ด)</p>
+  </div>
+
+  <div id="admin-content" style="display:none">
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-n" id="s-total" style="color:#CC0000">0</div><div class="stat-l">คูปองทั้งหมด</div></div>
+      <div class="stat-card"><div class="stat-n" id="s-active" style="color:#16a34a">0</div><div class="stat-l">ยังไม่ได้ใช้</div></div>
+      <div class="stat-card"><div class="stat-n" id="s-used" style="color:#dc2626">0</div><div class="stat-l">ใช้แล้ว</div></div>
+      <div class="stat-card"><div class="stat-n" id="s-expired" style="color:#9ca3af">0</div><div class="stat-l">หมดอายุ</div></div>
+    </div>
+
+    <div class="stat-card" style="margin-bottom:14px;text-align:center">
+      <div class="stat-n" id="s-savings" style="color:#CC0000;font-size:22px">฿0</div>
+      <div class="stat-l">มูลค่าส่วนลดที่แจกออกไป</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📋 รายการคูปองทั้งหมด</div>
+      <div id="admin-list"><p style="color:#aaa;text-align:center;padding:20px">ยังไม่มีข้อมูล</p></div>
+    </div>
+
+    <button class="btn btn-outline btn-sm" onclick="exportCSV()" style="margin-bottom:10px">📥 ดาวน์โหลด Excel/CSV</button>
+    <button class="btn btn-gray btn-sm" onclick="clearData()">🗑️ ล้างข้อมูลทั้งหมด (ระวัง!)</button>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<script>
+/* ═══════════════════════════════════════════
+   CONFIG — แก้ค่าตรงนี้ได้เลย
+═══════════════════════════════════════════ */
+const CFG = {
+  minBuy: 5000,       // ยอดขั้นต่ำ (บาท)
+  discount: 200,      // มูลค่าคูปอง (บาท)
+  validDays: 14,      // อายุคูปอง (วัน)
+  staffPin: '1234',   // PIN พนักงาน
+  adminPin: '9999',   // PIN ผู้จัดการ
+  storeName: 'มหาจักรทูลส์',
+  brand: 'MILWAUKEE',
+  campaign: 'Mid-Year Sale 2026'
+};
+
+/* ═══════════════════════════════════════════
+   STORAGE HELPERS
+═══════════════════════════════════════════ */
+const DB = {
+  get(){ return JSON.parse(localStorage.getItem('mhj_coupons')||'{}'); },
+  save(d){ localStorage.setItem('mhj_coupons', JSON.stringify(d)); },
+  put(c){ const d=this.get(); d[c.code]=c; this.save(d); },
+  find(code){ return this.get()[code.toUpperCase()]||null; }
+};
+
+/* ═══════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════ */
+function today(){ return new Date().toISOString().slice(0,10); }
+
+function addDays(base, n){
+  const d=new Date(base); d.setDate(d.getDate()+n);
+  return d.toISOString().slice(0,10);
+}
+
+function fmtDate(s){
+  if(!s) return '-';
+  const d=new Date(s);
+  return d.toLocaleDateString('th-TH',{year:'numeric',month:'short',day:'numeric'});
+}
+
+function genCode(){
+  const dt=today().replace(/-/g,'');
+  const abc='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let r='';
+  for(let i=0;i<4;i++) r+=abc[Math.floor(Math.random()*abc.length)];
+  return `MHJ-${dt}-${r}`;
+}
+
+function getStatus(c){
+  if(c.used) return 'used';
+  if(today()>c.expiry) return 'expired';
+  return 'active';
+}
+
+function daysLeft(expiry){
+  const diff=new Date(expiry)-new Date();
+  return Math.ceil(diff/(1000*60*60*24));
+}
+
+/* ═══════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════ */
+function showTab(el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+el.dataset.tab).classList.add('active');
+  if(el.dataset.tab==='admin' && adminUnlocked) loadAdmin();
+}
+
+/* ═══════════════════════════════════════════
+   PIN LOCKS
+═══════════════════════════════════════════ */
+let staffUnlocked=false, adminUnlocked=false;
+
+function checkStaffPin(){
+  const v=document.getElementById('staff-pin').value;
+  if(v===CFG.staffPin){
+    staffUnlocked=true;
+    document.getElementById('issue-lock').style.display='none';
+    document.getElementById('issue-form').style.display='block';
+  } else if(v.length===4){
+    const el=document.getElementById('staff-pin-err');
+    el.textContent='❌ PIN ไม่ถูกต้อง กรุณาลองใหม่';
+    setTimeout(()=>{ document.getElementById('staff-pin').value=''; el.textContent=''; },1200);
+  }
+}
+
+function checkAdminPin(){
+  const v=document.getElementById('admin-pin').value;
+  if(v===CFG.adminPin){
+    adminUnlocked=true;
+    document.getElementById('admin-lock').style.display='none';
+    document.getElementById('admin-content').style.display='block';
+    loadAdmin();
+  } else if(v.length>=4 && v.length===CFG.adminPin.length){
+    const el=document.getElementById('admin-pin-err');
+    el.textContent='❌ PIN ไม่ถูกต้อง';
+    setTimeout(()=>{ document.getElementById('admin-pin').value=''; el.textContent=''; },1200);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ELIGIBILITY CALCULATOR
+═══════════════════════════════════════════ */
+function calcEligibility(){
+  const amt=parseFloat(document.getElementById('purchase-amt').value)||0;
+  const receipt=document.getElementById('receipt-no').value.trim();
+  const progSec=document.getElementById('prog-section');
+  const okEl=document.getElementById('elig-ok');
+  const noEl=document.getElementById('elig-no');
+  const btn=document.getElementById('gen-btn');
+
+  if(amt>0){
+    progSec.style.display='block';
+    const pct=Math.min(amt/CFG.minBuy*100,100);
+    document.getElementById('prog-fill').style.width=pct+'%';
+    document.getElementById('prog-curr').textContent='฿'+amt.toLocaleString('th-TH');
+  } else {
+    progSec.style.display='none';
+  }
+
+  if(amt>=CFG.minBuy && receipt){
+    okEl.style.display='block'; noEl.style.display='none'; btn.disabled=false;
+  } else {
+    okEl.style.display='none'; btn.disabled=true;
+    if(amt>0 && amt<CFG.minBuy){
+      const need=(CFG.minBuy-amt).toLocaleString('th-TH');
+      noEl.innerHTML=`⚠️ ยอดยังไม่ถึง — ขาดอีก <strong>฿${need}</strong> จะครบ ฿${CFG.minBuy.toLocaleString('th-TH')}`;
+      noEl.style.display='block';
+    } else {
+      noEl.style.display='none';
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ISSUE COUPON
+═══════════════════════════════════════════ */
+function issueCoupon(){
+  const receipt=document.getElementById('receipt-no').value.trim();
+  const name=document.getElementById('cust-name').value.trim()||'ไม่ระบุชื่อ';
+  const phone=document.getElementById('cust-phone').value.trim()||'-';
+  const amt=parseFloat(document.getElementById('purchase-amt').value);
+
+  if(!receipt||amt<CFG.minBuy) return;
+
+  // Duplicate receipt check
+  const all=DB.get();
+  const dup=Object.values(all).find(c=>c.receipt===receipt);
+  if(dup){
+    alert(`⚠️ ใบเสร็จ "${receipt}" ออกคูปองไปแล้ว!\nรหัสคูปอง: ${dup.code}`);
+    return;
+  }
+
+  const code=genCode();
+  const issued=today();
+  const expiry=addDays(issued,CFG.validDays);
+
+  const coupon={
+    code, receipt, name, phone,
+    amount: amt,
+    discount: CFG.discount,
+    issued, expiry,
+    used: false, usedOn: null,
+    campaign: CFG.campaign
+  };
+
+  DB.put(coupon);
+  showCouponResult(coupon);
+}
+
+function showCouponResult(c){
+  document.getElementById('cv-name').textContent=c.name;
+  document.getElementById('cv-receipt').textContent=c.receipt;
+  document.getElementById('cv-issued').textContent=fmtDate(c.issued);
+  document.getElementById('cv-expiry').textContent=fmtDate(c.expiry);
+  document.getElementById('cv-code').textContent=c.code;
+
+  // QR Code
+  const qrEl=document.getElementById('qr-out');
+  qrEl.innerHTML='';
+  // Build a verify URL using current page location
+  const base=window.location.href.split('?')[0];
+  const qrText=`${base}?verify=${c.code}`;
+  new QRCode(qrEl,{
+    text: qrText,
+    width:220, height:220,
+    colorDark:'#111111',
+    colorLight:'#ffffff',
+    correctLevel:QRCode.CorrectLevel.M
+  });
+
+  document.getElementById('coupon-result').style.display='block';
+  setTimeout(()=>document.getElementById('coupon-result').scrollIntoView({behavior:'smooth'}),100);
+}
+
+function resetIssueForm(){
+  ['receipt-no','cust-name','cust-phone','purchase-amt'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  document.getElementById('coupon-result').style.display='none';
+  document.getElementById('prog-section').style.display='none';
+  document.getElementById('elig-ok').style.display='none';
+  document.getElementById('elig-no').style.display='none';
+  document.getElementById('gen-btn').disabled=true;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ═══════════════════════════════════════════
+   FIND & DISPLAY COUPON
+═══════════════════════════════════════════ */
+function findCoupon(mode){
+  const inputId = mode==='view'?'view-code':'verify-code';
+  const resultId = mode==='view'?'view-result':'verify-result';
+  const code=document.getElementById(inputId).value.trim().toUpperCase();
+  const el=document.getElementById(resultId);
+
+  if(!code){
+    el.innerHTML='<div class="alert a-error">กรุณาใส่รหัสคูปองก่อน</div>';
+    return;
+  }
+
+  const c=DB.find(code);
+  if(!c){
+    el.innerHTML=`<div class="alert a-error">❌ ไม่พบรหัส <strong>${code}</strong> ในระบบ<br>
+    <small>ตรวจสอบตัวอักษร หรืออาจออกคูปองบนอุปกรณ์อื่น</small></div>`;
+    return;
+  }
+
+  const st=getStatus(c);
+  el.innerHTML=renderCard(c, st, mode==='verify');
+  el.scrollIntoView({behavior:'smooth'});
+
+  // Draw QR for view tab
+  if(mode==='view' && st==='active'){
+    setTimeout(()=>{
+      const qEl=document.getElementById('view-qr-out');
+      if(qEl){
+        const base=window.location.href.split('?')[0];
+        new QRCode(qEl,{
+          text:`${base}?verify=${c.code}`,
+          width:180,height:180,
+          colorDark:'#111',colorLight:'#fff',
+          correctLevel:QRCode.CorrectLevel.M
+        });
+      }
+    },80);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RENDER COUPON CARD (shared)
+═══════════════════════════════════════════ */
+function renderCard(c, st, showRedeemBtn){
+  const badges={
+    active:`<span class="badge b-active">✅ ใช้งานได้</span>`,
+    used:`<span class="badge b-used">❌ ใช้แล้ว</span>`,
+    expired:`<span class="badge b-expired">⏰ หมดอายุ</span>`
+  };
+
+  let html=`
+  <div class="coupon-wrap">
+    <div class="coupon-top">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div class="coupon-brand">MILWAUKEE × ${CFG.storeName}</div>
+        ${badges[st]}
+      </div>
+      <div class="coupon-value"><sup>฿</sup>${c.discount}</div>
+      <div class="coupon-sub">ส่วนลดสินค้าทุกชนิดในร้าน</div>
+    </div>
+    <hr class="coupon-divider">
+    <div class="coupon-bottom">
+      <div class="ci"><label>ลูกค้า</label><span>${c.name}</span></div>
+      <div class="ci"><label>ใบเสร็จ</label><span>${c.receipt}</span></div>
+      <div class="ci"><label>วันออก</label><span>${fmtDate(c.issued)}</span></div>
+      <div class="ci"><label>หมดอายุ</label><span style="color:${st==='active'?'#f87171':'#888'}">${fmtDate(c.expiry)}</span></div>
+    </div>
+    <div class="coupon-code-box">${c.code}</div>
+    <div style="padding:4px 22px 14px;font-size:10px;color:#555;text-align:center">
+      ${CFG.campaign} · ยอดซื้อ ฿${c.amount.toLocaleString('th-TH')}
+    </div>
+  </div>`;
+
+  // Status messages
+  if(st==='active'){
+    const dl=daysLeft(c.expiry);
+    html+=`<div class="alert a-success">⏳ เหลือเวลาอีก <strong>${dl} วัน</strong> (หมดอายุ ${fmtDate(c.expiry)})</div>`;
+
+    if(!showRedeemBtn){
+      // QR for customer view
+      html+=`<div class="qr-box"><div id="view-qr-out"></div><p>แสดง QR นี้ให้แคชเชียร์สแกน<br>หรือแจ้งรหัส ${c.code}</p></div>`;
+    } else {
+      // Redeem button for cashier
+      html+=`<button class="btn btn-green" onclick="redeemCoupon('${c.code}')" style="margin-top:4px">
+        ✅ แลกคูปองนี้ — ลดราคา ฿${c.discount} ได้เลย
+      </button>
+      <p style="font-size:11px;color:#888;text-align:center;margin-top:8px">
+        กดปุ่มหลังหักส่วนลดจากยอดชำระแล้วเท่านั้น
+      </p>`;
+    }
+  } else if(st==='used'){
+    html+=`<div class="alert a-error">❌ คูปองนี้ถูกแลกไปแล้ว${c.usedOn?' เมื่อ '+fmtDate(c.usedOn):''} — ไม่สามารถใช้ซ้ำได้</div>`;
+  } else {
+    html+=`<div class="alert a-warn">⏰ คูปองหมดอายุแล้ว (วันที่ ${fmtDate(c.expiry)})</div>`;
+  }
+
+  return html;
+}
+
+/* ═══════════════════════════════════════════
+   REDEEM COUPON
+═══════════════════════════════════════════ */
+function redeemCoupon(code){
+  if(!confirm(`ยืนยันการแลกคูปอง\n\nรหัส: ${code}\nส่วนลด: ฿${CFG.discount}\n\nหลังกด OK คูปองจะถูกทำเครื่องหมาย "ใช้แล้ว"\nไม่สามารถย้อนกลับได้`)) return;
+
+  const all=DB.get();
+  if(!all[code]){
+    alert('ไม่พบข้อมูลคูปอง'); return;
+  }
+  all[code].used=true;
+  all[code].usedOn=today();
+  DB.save(all);
+
+  document.getElementById('verify-result').innerHTML=`
+    <div class="alert a-success" style="font-size:15px;padding:18px">
+      ✅ <strong>แลกคูปองสำเร็จ!</strong><br><br>
+      รหัส: <strong>${code}</strong><br>
+      ส่วนลดที่ได้รับ: <strong>฿${CFG.discount}</strong><br>
+      วันที่แลก: ${fmtDate(today())}<br><br>
+      <em style="font-size:12px">บันทึกในระบบแล้ว ✓</em>
+    </div>
+    <button class="btn btn-outline" onclick="clearVerifyForm()">🔄 ตรวจสอบคูปองใบต่อไป</button>
+  `;
+}
+
+function clearVerifyForm(){
+  document.getElementById('verify-code').value='';
+  document.getElementById('verify-result').innerHTML='';
+}
+
+/* ═══════════════════════════════════════════
+   ADMIN REPORT
+═══════════════════════════════════════════ */
+function loadAdmin(){
+  const all=Object.values(DB.get());
+  let total=0,active=0,used=0,expired=0,savings=0;
+
+  all.forEach(c=>{
+    total++;
+    const s=getStatus(c);
+    if(s==='active') active++;
+    else if(s==='used'){ used++; savings+=c.discount; }
+    else expired++;
+  });
+
+  document.getElementById('s-total').textContent=total;
+  document.getElementById('s-active').textContent=active;
+  document.getElementById('s-used').textContent=used;
+  document.getElementById('s-expired').textContent=expired;
+  document.getElementById('s-savings').textContent='฿'+savings.toLocaleString('th-TH');
+
+  const listEl=document.getElementById('admin-list');
+  if(!all.length){
+    listEl.innerHTML='<p style="color:#aaa;text-align:center;padding:20px">ยังไม่มีคูปองในระบบ</p>';
+    return;
+  }
+
+  const sorted=[...all].sort((a,b)=>b.issued.localeCompare(a.issued));
+  const stLabel={active:'ใช้งานได้',used:'ใช้แล้ว',expired:'หมดอายุ'};
+  const stClass={active:'b-active',used:'b-used',expired:'b-expired'};
+
+  listEl.innerHTML=sorted.map(c=>{
+    const s=getStatus(c);
+    return `<div class="list-item">
+      <div style="flex:1;min-width:0">
+        <div class="cl-code">${c.code}</div>
+        <div class="cl-meta">${c.name} · ${c.receipt}</div>
+        <div class="cl-meta">฿${c.amount.toLocaleString()} · ออก ${fmtDate(c.issued)}</div>
+      </div>
+      <span class="badge ${stClass[s]}">${stLabel[s]}</span>
+    </div>`;
+  }).join('');
+}
+
+function exportCSV(){
+  const all=Object.values(DB.get());
+  if(!all.length){ alert('ยังไม่มีข้อมูล'); return; }
+
+  const hdr=['รหัสคูปอง','ชื่อลูกค้า','เบอร์โทร','เลขใบเสร็จ','ยอดซื้อ(บาท)','มูลค่าคูปอง(บาท)','วันออกคูปอง','วันหมดอายุ','สถานะ','วันที่ใช้'];
+  const rows=all.map(c=>[
+    c.code,c.name,c.phone,c.receipt,
+    c.amount,c.discount,c.issued,c.expiry,
+    getStatus(c),c.usedOn||''
+  ]);
+
+  const csv=[hdr,...rows].map(r=>r.join(',')).join('\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`mahajak-coupons-${today()}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+function clearData(){
+  if(!confirm('⚠️ ลบข้อมูลคูปองทั้งหมด?\nกระทำนี้ไม่สามารถย้อนกลับได้!')) return;
+  if(!confirm('ยืนยันอีกครั้ง: ล้างข้อมูลทั้งหมด?')) return;
+  localStorage.removeItem('mhj_coupons');
+  loadAdmin();
+  alert('ล้างข้อมูลเรียบร้อย');
+}
+
+/* ═══════════════════════════════════════════
+   AUTO-VERIFY FROM QR SCAN
+   (ถ้าเปิดหน้าผ่าน URL ?verify=MHJ-...)
+═══════════════════════════════════════════ */
+(function autoVerify(){
+  const p=new URLSearchParams(window.location.search);
+  const code=p.get('verify');
+  if(!code) return;
+
+  // Switch to verify tab
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelector('[data-tab="verify"]').classList.add('active');
+  document.getElementById('tab-verify').classList.add('active');
+
+  document.getElementById('verify-code').value=code.toUpperCase();
+  setTimeout(()=>findCoupon('verify'), 200);
+})();
+</script>
+
+</body>
+</html>

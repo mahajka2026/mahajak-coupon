@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>คูปองส่วนลด | มหาจักรทูลส์</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Segoe UI',Helvetica,Arial,sans-serif;background:#f7f7f7;min-height:100vh;color:#222}
+
+/* ── TOP BAR ── */
+.topbar{background:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #eee;position:sticky;top:0;z-index:100}
+.topbar-title{font-size:18px;font-weight:800;color:#111}
+.topbar-icons{display:flex;gap:14px;align-items:center}
+.topbar-icons span{font-size:22px;cursor:pointer;color:#444}
+.cart-badge{position:relative}
+.badge-dot{position:absolute;top:-6px;right:-6px;background:#e53935;color:#fff;font-size:10px;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+
+/* ── TABS ── */
+.tabs-row{background:#fff;display:flex;border-bottom:1px solid #eee;margin-bottom:0}
+.tab-btn{flex:1;text-align:center;padding:12px 0;font-size:14px;font-weight:700;color:#aaa;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s}
+.tab-btn.active{color:#e53935;border-bottom-color:#e53935}
+
+/* ── FILTER CHIPS ── */
+.filter-row{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;background:#fff;border-bottom:1px solid #f0f0f0}
+.filter-row::-webkit-scrollbar{display:none}
+.chip{white-space:nowrap;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid #ddd;color:#777;background:#fff;transition:all .2s}
+.chip.active{background:#e53935;color:#fff;border-color:#e53935}
+
+/* ── SECTION HEADER ── */
+.section-hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 16px 8px}
+.section-hdr h2{font-size:18px;font-weight:800;color:#111}
+.btn-collect-all{border:1.5px solid #222;border-radius:6px;padding:6px 14px;font-size:13px;font-weight:700;background:#fff;cursor:pointer;color:#111;transition:all .2s}
+.btn-collect-all:active{background:#f0f0f0}
+
+/* ── COUPON GRID ── */
+.coupon-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 12px 12px}
+
+/* ── COUPON CARD ── */
+.coupon-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.09);position:relative}
+.coupon-card.featured{grid-column:1/-1}
+.cc-logo{padding:14px 14px 8px;display:flex;align-items:center;justify-content:space-between}
+.cc-brand-badge{background:#111;color:#fff;font-size:9px;font-weight:900;letter-spacing:1.5px;padding:3px 7px;border-radius:4px;text-transform:uppercase}
+.cc-logo-img{width:60px;height:60px;object-fit:contain;display:flex;align-items:center;justify-content:center}
+.cc-body{padding:0 14px 6px}
+.cc-discount{font-size:22px;font-weight:900;color:#e53935;line-height:1.1}
+.cc-discount.big{font-size:28px}
+.cc-minbuy{font-size:12px;color:#888;margin-top:4px}
+.cc-minbuy a{color:#e53935;text-decoration:underline;font-weight:600;cursor:pointer}
+.cc-footer{display:flex;align-items:center;justify-content:space-between;padding:8px 14px 12px;border-top:1px solid #f5f5f5;margin-top:6px}
+.cc-expiry{font-size:11px;color:#999;font-weight:600}
+.btn-collect{border:none;border-radius:6px;padding:7px 16px;font-size:13px;font-weight:800;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-collect.idle{background:#111;color:#fff}
+.btn-collect.idle:active{background:#333;transform:scale(.96)}
+.btn-collect.done{background:#f0f0f0;color:#16a34a;cursor:default}
+.btn-collect.done::before{content:'✓ '}
+
+/* ── FEATURED card extras ── */
+.cc-tag{display:inline-block;background:#fff3cd;color:#856404;font-size:10px;font-weight:800;padding:2px 8px;border-radius:4px;margin-bottom:6px;letter-spacing:.5px}
+.cc-desc{font-size:12px;color:#666;margin:4px 0 2px;line-height:1.5}
+
+/* ── MILWAUKEE featured card ── */
+.mwk-card{background:#111;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.18);grid-column:1/-1;position:relative}
+.mwk-top{padding:18px 18px 12px;position:relative;overflow:hidden}
+.mwk-top::after{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(204,0,0,.15);border-radius:50%}
+.mwk-brand{font-size:9px;letter-spacing:3px;color:#CC0000;font-weight:900;text-transform:uppercase;margin-bottom:6px}
+.mwk-discount{font-size:42px;font-weight:900;color:#fff;line-height:1}
+.mwk-discount sup{font-size:16px;font-weight:400;vertical-align:super}
+.mwk-sub{font-size:12px;color:#aaa;margin-top:4px}
+.mwk-conditions{padding:10px 18px;background:rgba(255,255,255,.04);font-size:11px;color:#aaa;border-top:1px solid rgba(255,255,255,.07)}
+.mwk-conditions strong{color:#fff}
+.mwk-footer{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 14px}
+.mwk-expiry{font-size:11px;color:#666;font-weight:600}
+
+/* ── MY COUPONS section ── */
+.my-section{padding:16px;background:#fff;margin-top:12px;border-top:8px solid #f0f0f0}
+.my-section h3{font-size:16px;font-weight:800;margin-bottom:12px;color:#111}
+.my-empty{text-align:center;padding:28px 0;color:#bbb;font-size:14px}
+.my-coupon-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f5f5f5}
+.my-coupon-item:last-child{border-bottom:none}
+.mci-icon{width:44px;height:44px;background:#111;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.mci-info{flex:1}
+.mci-name{font-size:13px;font-weight:800;color:#111}
+.mci-detail{font-size:11px;color:#999;margin-top:2px}
+.mci-remove{font-size:18px;color:#ccc;cursor:pointer;padding:4px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#111;color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;font-weight:700;opacity:0;pointer-events:none;transition:all .3s;z-index:999;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;display:flex;z-index:100;max-width:480px;margin:0 auto}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 0 8px;cursor:pointer;color:#aaa;font-size:10px;font-weight:700;gap:2px;transition:color .2s}
+.bnav-item.active{color:#e53935}
+.bnav-item span.ico{font-size:22px;display:block}
+
+.main-content{padding-bottom:80px}
+
+/* ── MODAL (T&C) ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:flex-end;justify-content:center}
+.modal-bg.open{display:flex}
+.modal-box{background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 32px;max-width:480px;width:100%;max-height:70vh;overflow-y:auto}
+.modal-box h3{font-size:16px;font-weight:800;margin-bottom:12px}
+.modal-box p{font-size:13px;color:#555;line-height:1.7;margin-bottom:8px}
+.modal-close{width:100%;padding:13px;background:#111;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-top:16px}
+
+@media(max-width:360px){
+  .cc-discount{font-size:19px}
+  .cc-discount.big{font-size:24px}
+  .mwk-discount{font-size:36px}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-title">คูปองส่วนลด</div>
+  <div class="topbar-icons">
+    <span title="สแกน QR">⬛</span>
+    <span title="คูปองของฉัน">🎟️</span>
+    <span class="cart-badge">🛒<span class="badge-dot">8</span></span>
+  </div>
+</div>
+
+<!-- MAIN TABS -->
+<div class="tabs-row">
+  <div class="tab-btn active">คูปองออนไลน์</div>
+  <div class="tab-btn">คูปองห้าง</div>
+</div>
+
+<!-- FILTER CHIPS -->
+<div class="filter-row">
+  <div class="chip active" onclick="filterCategory(this,'all')">คูปอง (<span id="cnt-all">0</span>)</div>
+  <div class="chip" onclick="filterCategory(this,'tool')">เครื่องมือช่าง</div>
+  <div class="chip" onclick="filterCategory(this,'elec')">อิเล็กทรอนิกส์</div>
+  <div class="chip" onclick="filterCategory(this,'hardware')">อุปกรณ์ฮาร์ดแวร์</div>
+</div>
+
+<div class="main-content">
+
+  <!-- ═══ FEATURED SECTION ═══ -->
+  <div class="section-hdr">
+    <h2>⭐ โปรโมชันเด่น</h2>
+  </div>
+
+  <div style="padding:0 12px 12px">
+    <!-- MILWAUKEE FEATURED CARD -->
+    <div class="mwk-card" id="mwk-main">
+      <div class="mwk-top">
+        <div class="mwk-brand">🔧 Milwaukee × มหาจักรทูลส์ · Mid-Year Sale 2026</div>
+        <div style="display:inline-block;background:#CC0000;color:#fff;font-size:10px;font-weight:800;padding:2px 10px;border-radius:4px;margin-bottom:8px;letter-spacing:.5px">🔥 BOUNCE-BACK COUPON</div>
+        <div class="mwk-discount"><sup>฿</sup>200</div>
+        <div class="mwk-sub">ส่วนลดสำหรับสินค้าทุกชนิดในร้าน</div>
+      </div>
+      <div class="mwk-conditions">
+        เงื่อนไข: ซื้อสินค้า <strong>MILWAUKEE</strong> ครบ <strong>฿5,000</strong> ขึ้นไป รับคูปองส่วนลด <strong>฿200</strong>
+        ใช้ได้ภายใน <strong>14 วัน</strong> นับจากวันที่ซื้อ ·
+        <span onclick="openTC()" style="color:#CC0000;text-decoration:underline;cursor:pointer;font-weight:700">ดูเงื่อนไขเพิ่มเติม</span>
+      </div>
+      <div class="mwk-footer">
+        <div class="mwk-expiry">หมดอายุ: 30 มิ.ย. 2569</div>
+        <button class="btn-collect idle" id="btn-mwk" onclick="collectCoupon('mwk')">เก็บ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ POWER TOOLS SECTION ═══ -->
+  <div class="section-hdr">
+    <h2>เครื่องมือช่าง</h2>
+    <button class="btn-collect-all" onclick="collectAll()">เก็บทั้งหมด</button>
+  </div>
+
+  <div class="coupon-grid" id="coupon-grid">
+
+    <!-- Card 1 -->
+    <div class="coupon-card" data-cat="tool" data-id="c1">
+      <div class="cc-logo">
+        <span style="font-size:32px">🔩</span>
+        <span class="cc-brand-badge">มหาจักร</span>
+      </div>
+      <div class="cc-body">
+        <div class="cc-discount">ลด ฿100</div>
+        <div class="cc-minbuy">ขั้นต่ำ ฿2,500 <a onclick="openTC()">T&amp;C</a></div>
+      </div>
+      <div class="cc-footer">
+        <span class="cc-expiry">หมดอายุ: 30 มิ.ย.</span>
+        <button class="btn-collect idle" id="btn-c1" onclick="collectCoupon('c1')">เก็บ</button>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="coupon-card" data-cat="tool" data-id="c2">
+      <div class="cc-logo">
+        <span style="font-size:32px">🔧</span>
+        <span class="cc-brand-badge">Hand Tool</span>
+      </div>
+      <div class="cc-body">
+        <div class="cc-discount">ลด ฿50</div>
+        <div class="cc-minbuy">ขั้นต่ำ ฿800 <a onclick="openTC()">T&amp;C</a></div>
+      </div>
+      <div class="cc-footer">
+        <span class="cc-expiry">หมดอายุ: 24 มิ.ย.</span>
+        <button class="btn-collect idle" id="btn-c2" onclick="collectCoupon('c2')">เก็บ</button>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="coupon-card" data-cat="elec" data-id="c3">
+      <div class="cc-logo">
+        <span style="font-size:32px">🔋</span>
+        <span class="cc-brand-badge">Battery</span>
+      </div>
+      <div class="cc-body">
+        <div class="cc-discount">ลด 10%</div>
+        <div class="cc-minbuy">ขั้นต่ำ ฿1,500 <a onclick="openTC()">T&amp;C</a></div>
+      </div>
+      <div class="cc-footer">
+        <span class="cc-expiry">หมดอายุ: 30 มิ.ย.</span>
+        <button class="btn-collect idle" id="btn-c3" onclick="collectCoupon('c3')">เก็บ</button>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="coupon-card" data-cat="hardware" data-id="c4">
+      <div class="cc-logo">
+        <span style="font-size:32px">🪛</span>
+        <span class="cc-brand-badge">อุปกรณ์</span>
+      </div>
+      <div class="cc-body">
+        <div class="cc-discount">ฟรี! ค่าส่ง</div>
+        <div class="cc-minbuy">ขั้นต่ำ ฿699 <a onclick="openTC()">T&amp;C</a></div>
+      </div>
+      <div class="cc-footer">
+        <span class="cc-expiry">หมดอายุ: 24 มิ.ย.</span>
+        <button class="btn-collect idle" id="btn-c4" onclick="collectCoupon('c4')">เก็บ</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ MY SAVED COUPONS ═══ -->
+  <div class="my-section" id="my-section">
+    <h3>🎟️ คูปองที่เก็บแล้ว</h3>
+    <div id="my-list">
+      <div class="my-empty">ยังไม่ได้เก็บคูปองไว้<br><small>กด "เก็บ" เพื่อบันทึกลงโทรศัพท์</small></div>
+    </div>
+  </div>
+
+</div><!-- /main-content -->
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="bnav-item"><span class="ico">🏠</span>หน้าหลัก</div>
+  <div class="bnav-item"><span class="ico">🛍️</span>ช้อป</div>
+  <div class="bnav-item"><span class="ico">🌸</span>สาขา</div>
+  <div class="bnav-item active"><span class="ico">🎟️</span>คูปอง</div>
+  <div class="bnav-item"><span class="ico">👤</span>บัญชี</div>
+</div>
+
+<!-- T&C MODAL -->
+<div class="modal-bg" id="tc-modal" onclick="closeTC(event)">
+  <div class="modal-box">
+    <h3>📋 เงื่อนไขคูปอง MILWAUKEE Bounce-Back</h3>
+    <p>1. คูปองนี้สำหรับสินค้า MILWAUKEE ในงาน Mid-Year Sale 2026 ที่ร้านมหาจักรทูลส์เท่านั้น</p>
+    <p>2. ซื้อสินค้า MILWAUKEE ครบ <strong>฿5,000</strong> ขึ้นไป ในการซื้อครั้งเดียว รับคูปองส่วนลด <strong>฿200</strong></p>
+    <p>3. คูปองออกให้ ณ จุดขาย (POS) หลังจากชำระเงินครบตามเงื่อนไข</p>
+    <p>4. สามารถใช้คูปองซื้อสินค้าอื่นใดก็ได้ในร้านมหาจักรทูลส์ ภายใน <strong>14 วัน</strong> นับจากวันที่ออกคูปอง</p>
+    <p>5. ไม่สามารถแลกเป็นเงินสดหรือสะสมรวมกับคูปองอื่นได้</p>
+    <p>6. บริษัทขอสงวนสิทธิ์เปลี่ยนแปลงเงื่อนไขโดยไม่แจ้งล่วงหน้า</p>
+    <button class="modal-close" onclick="closeTC()">รับทราบ</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── COUPON METADATA ── */
+const COUPON_META = {
+  mwk: { name:'MILWAUKEE ฿200 Bounce-Back', detail:'ซื้อ MILWAUKEE ≥฿5,000 · หมดอายุ 30 มิ.ย.', icon:'🔧', color:'#CC0000' },
+  c1:  { name:'ส่วนลด ฿100 เครื่องมือช่าง', detail:'ขั้นต่ำ ฿2,500 · หมดอายุ 30 มิ.ย.', icon:'🔩', color:'#374151' },
+  c2:  { name:'ส่วนลด ฿50 Hand Tools', detail:'ขั้นต่ำ ฿800 · หมดอายุ 24 มิ.ย.', icon:'🔧', color:'#374151' },
+  c3:  { name:'ส่วนลด 10% แบตเตอรี่', detail:'ขั้นต่ำ ฿1,500 · หมดอายุ 30 มิ.ย.', icon:'🔋', color:'#374151' },
+  c4:  { name:'ส่งฟรี! อุปกรณ์', detail:'ขั้นต่ำ ฿699 · หมดอายุ 24 มิ.ย.', icon:'🪛', color:'#374151' },
+};
+
+/* ── STORAGE ── */
+function getSaved(){ return JSON.parse(localStorage.getItem('mhj_saved_coupons')||'[]'); }
+function setSaved(arr){ localStorage.setItem('mhj_saved_coupons', JSON.stringify(arr)); }
+
+/* ── COLLECT COUPON ── */
+function collectCoupon(id){
+  const saved=getSaved();
+  if(saved.includes(id)) return; // already saved
+
+  saved.push(id);
+  setSaved(saved);
+
+  // Update button
+  const btn=document.getElementById('btn-'+id);
+  if(btn){ btn.className='btn-collect done'; btn.textContent='เก็บแล้ว'; }
+
+  showToast('เก็บคูปองแล้ว! 🎉 ดูได้ในส่วน "คูปองที่เก็บแล้ว"');
+  renderMyList();
+  updateCount();
+}
+
+/* ── COLLECT ALL ── */
+function collectAll(){
+  const all=['mwk','c1','c2','c3','c4'];
+  const saved=getSaved();
+  let added=0;
+  all.forEach(id=>{
+    if(!saved.includes(id)){ saved.push(id); added++; }
+  });
+  setSaved(saved);
+  all.forEach(id=>{
+    const btn=document.getElementById('btn-'+id);
+    if(btn){ btn.className='btn-collect done'; btn.textContent='เก็บแล้ว'; }
+  });
+  if(added>0) showToast(`เก็บคูปองทั้งหมด ${saved.length} ใบแล้ว! 🎉`);
+  else showToast('เก็บครบแล้ว ✓');
+  renderMyList();
+  updateCount();
+}
+
+/* ── REMOVE SAVED ── */
+function removeSaved(id){
+  let saved=getSaved().filter(x=>x!==id);
+  setSaved(saved);
+  const btn=document.getElementById('btn-'+id);
+  if(btn){ btn.className='btn-collect idle'; btn.textContent='เก็บ'; }
+  renderMyList();
+  updateCount();
+  showToast('นำคูปองออกแล้ว');
+}
+
+/* ── RENDER MY LIST ── */
+function renderMyList(){
+  const saved=getSaved();
+  const el=document.getElementById('my-list');
+  if(!saved.length){
+    el.innerHTML='<div class="my-empty">ยังไม่ได้เก็บคูปองไว้<br><small>กด "เก็บ" เพื่อบันทึกลงโทรศัพท์</small></div>';
+    return;
+  }
+  el.innerHTML=saved.map(id=>{
+    const m=COUPON_META[id];
+    if(!m) return '';
+    return `<div class="my-coupon-item">
+      <div class="mci-icon" style="background:${m.color}">${m.icon}</div>
+      <div class="mci-info">
+        <div class="mci-name">${m.name}</div>
+        <div class="mci-detail">${m.detail}</div>
+      </div>
+      <div class="mci-remove" onclick="removeSaved('${id}')" title="นำออก">✕</div>
+    </div>`;
+  }).join('');
+}
+
+/* ── UPDATE COUNT ── */
+function updateCount(){
+  document.getElementById('cnt-all').textContent=Object.keys(COUPON_META).length;
+}
+
+/* ── RESTORE STATE ON LOAD ── */
+function restoreState(){
+  const saved=getSaved();
+  saved.forEach(id=>{
+    const btn=document.getElementById('btn-'+id);
+    if(btn){ btn.className='btn-collect done'; btn.textContent='เก็บแล้ว'; }
+  });
+  renderMyList();
+  updateCount();
+}
+
+/* ── FILTER ── */
+function filterCategory(el, cat){
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.coupon-card[data-cat]').forEach(card=>{
+    if(cat==='all'||card.dataset.cat===cat){
+      card.style.display='';
+    } else {
+      card.style.display='none';
+    }
+  });
+}
+
+/* ── TOAST ── */
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+/* ── T&C MODAL ── */
+function openTC(){ document.getElementById('tc-modal').classList.add('open'); }
+function closeTC(e){ if(!e||e.target===document.getElementById('tc-modal')) document.getElementById('tc-modal').classList.remove('open'); }
+
+/* ── INIT ── */
+restoreState();
+</script>
+
+</body>
+</html>
